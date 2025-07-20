@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antimatter Dimensions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 20px;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .game-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .dimensions-panel, .upgrades-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+            text-align: center;
+        }
+
+        .dimension {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dimension:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .dimension-info {
+            flex: 1;
+        }
+
+        .dimension-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .dimension-amount {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+
+        .dimension-cost {
+            font-size: 0.8rem;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+
+        .buy-btn {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .buy-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .upgrade {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .upgrade:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upgrade-info {
+            flex: 1;
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-description {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-cost {
+            font-size: 0.8rem;
+            color: #ff6b6b;
+        }
+
+        .achievements-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .achievement {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .achievement-icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            color: #4ecdc4;
+        }
+
+        .achievement-text {
+            font-size: 0.9rem;
+        }
+
+        .achievement.locked {
+            opacity: 0.5;
+            border-left-color: #666;
+        }
+
+        .achievement.locked .achievement-icon {
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .game-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .stats-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Antimatter Dimensions</h1>
+            <p class="subtitle">An incremental game of cosmic proportions</p>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="stat-label">Antimatter</div>
+                <div class="stat-value" id="antimatter">1.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Antimatter per Second</div>
+                <div class="stat-value" id="antimatterPerSec">0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Antimatter Gained</div>
+                <div class="stat-value" id="totalAntimatter">0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Time Played</div>
+                <div class="stat-value" id="timePlayed">00:00:00</div>
+            </div>
+        </div>
+
+        <div class="game-panel">
+            <div class="dimensions-panel">
+                <h2 class="panel-title">Dimensions</h2>
+                <div class="dimension">
+                    <div class="dimension-info">
+                        <div class="dimension-name">1st Dimension</div>
+                        <div class="dimension-amount">Owned: <span id="dim1-amount">0</span></div>
+                        <div class="dimension-cost">Cost: <span id="dim1-cost">10</span> antimatter</div>
+                    </div>
+                    <button class="buy-btn" onclick="buyDimension(1)">Buy</button>
+                </div>
+                <div class="dimension">
+                    <div class="dimension-info">
+                        <div class="dimension-name">2nd Dimension</div>
+                        <div class="dimension-amount">Owned: <span id="dim2-amount">0</span></div>
+                        <div class="dimension-cost">Cost: <span id="dim2-cost">100</span> antimatter</div>
+                    </div>
+                    <button class="buy-btn" onclick="buyDimension(2)">Buy</button>
+                </div>
+                <div class="dimension">
+                    <div class="dimension-info">
+                        <div class="dimension-name">3rd Dimension</div>
+                        <div class="dimension-amount">Owned: <span id="dim3-amount">0</span></div>
+                        <div class="dimension-cost">Cost: <span id="dim3-cost">1,000</span> antimatter</div>
+                    </div>
+                    <button class="buy-btn" onclick="buyDimension(3)">Buy</button>
+                </div>
+                <div class="dimension">
+                    <div class="dimension-info">
+                        <div class="dimension-name">4th Dimension</div>
+                        <div class="dimension-amount">Owned: <span id="dim4-amount">0</span></div>
+                        <div class="dimension-cost">Cost: <span id="dim4-cost">10,000</span> antimatter</div>
+                    </div>
+                    <button class="buy-btn" onclick="buyDimension(4)">Buy</button>
+                </div>
+            </div>
+
+            <div class="upgrades-panel">
+                <h2 class="panel-title">Upgrades</h2>
+                <div class="upgrade">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Dimension Boost</div>
+                        <div class="upgrade-description">Doubles 1st dimension production</div>
+                        <div class="upgrade-cost">Cost: 50 antimatter</div>
+                    </div>
+                    <button class="buy-btn" id="upgrade1-btn" onclick="buyUpgrade(1)">Buy</button>
+                </div>
+                <div class="upgrade">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Multiplier</div>
+                        <div class="upgrade-description">All dimensions produce 2x more</div>
+                        <div class="upgrade-cost">Cost: 500 antimatter</div>
+                    </div>
+                    <button class="buy-btn" id="upgrade2-btn" onclick="buyUpgrade(2)">Buy</button>
+                </div>
+                <div class="upgrade">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Auto Buyer</div>
+                        <div class="upgrade-description">Automatically buy 1st dimension</div>
+                        <div class="upgrade-cost">Cost: 1,000 antimatter</div>
+                    </div>
+                    <button class="buy-btn" id="upgrade3-btn" onclick="buyUpgrade(3)">Buy</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="achievements-panel">
+            <h2 class="panel-title">Achievements</h2>
+            <div class="achievement" id="achievement1">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-text">First Steps: Gain 10 antimatter</div>
+            </div>
+            <div class="achievement locked" id="achievement2">
+                <div class="achievement-icon">⭐</div>
+                <div class="achievement-text">Growing: Gain 100 antimatter</div>
+            </div>
+            <div class="achievement locked" id="achievement3">
+                <div class="achievement-icon">🌟</div>
+                <div class="achievement-text">Expanding: Gain 1,000 antimatter</div>
+            </div>
+            <div class="achievement locked" id="achievement4">
+                <div class="achievement-icon">💎</div>
+                <div class="achievement-text">Dimension Master: Own 10 of any dimension</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            antimatter: 1,
+            antimatterPerSec: 1,
+            totalAntimatter: 0,
+            timePlayed: 0,
+            dimensions: [0, 0, 0, 0],
+            dimensionCosts: [10, 100, 1000, 10000],
+            dimensionProduction: [0.1, 1, 10, 100],
+            upgrades: [false, false, false],
+            upgradeCosts: [50, 500, 1000],
+            achievements: [false, false, false, false],
+            autoBuyer: false
+        };
+
+        // Format numbers
+        function formatNumber(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toFixed(2);
+        }
+
+        // Update display
+        function updateDisplay() {
+            document.getElementById('antimatter').textContent = formatNumber(gameState.antimatter);
+            document.getElementById('antimatterPerSec').textContent = formatNumber(gameState.antimatterPerSec) + '/s';
+            document.getElementById('totalAntimatter').textContent = formatNumber(gameState.totalAntimatter);
+            
+            // Update dimension displays and cost colors
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`dim${i+1}-amount`).textContent = gameState.dimensions[i];
+                const costSpan = document.getElementById(`dim${i+1}-cost`);
+                costSpan.textContent = formatNumber(gameState.dimensionCosts[i]);
+                
+                // Change cost color based on affordability - target the parent div for full text
+                const costElement = costSpan.parentElement; // This is the "dimension-cost" div
+                const canAfford = gameState.antimatter >= gameState.dimensionCosts[i];
+                costElement.style.color = canAfford ? '#4ecdc4' : '#ff6b6b'; // Green if affordable, red if not
+            }
+
+            // Update upgrade buttons and cost colors
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById(`upgrade${i+1}-btn`);
+                const upgradeElement = btn.parentElement;
+                const costElement = upgradeElement.querySelector('.upgrade-cost');
+                
+                if (gameState.upgrades[i]) {
+                    btn.textContent = 'Owned';
+                    btn.disabled = true;
+                    costElement.style.color = '#666'; // Gray for owned upgrades
+                } else {
+                    const canAfford = gameState.antimatter >= gameState.upgradeCosts[i];
+                    btn.disabled = !canAfford;
+                    costElement.style.color = canAfford ? '#4ecdc4' : '#ff6b6b'; // Green if affordable, red if not
+                }
+            }
+
+            // Check achievements
+            checkAchievements();
+        }
+
+        // Buy dimension
+        function buyDimension(dimIndex) {
+            const cost = gameState.dimensionCosts[dimIndex - 1];
+            if (gameState.antimatter >= cost) {
+                gameState.antimatter -= cost;
+                gameState.dimensions[dimIndex - 1]++;
+                gameState.dimensionCosts[dimIndex - 1] = Math.floor(cost * 1.15);
+                updateDisplay();
+            }
+        }
+
+        // Buy upgrade
+        function buyUpgrade(upgradeIndex) {
+            const cost = gameState.upgradeCosts[upgradeIndex - 1];
+            if (gameState.antimatter >= cost && !gameState.upgrades[upgradeIndex - 1]) {
+                gameState.antimatter -= cost;
+                gameState.upgrades[upgradeIndex - 1] = true;
+                
+                if (upgradeIndex === 3) {
+                    gameState.autoBuyer = true;
+                }
+                
+                updateDisplay();
+            }
+        }
+
+        // Calculate production
+        function calculateProduction() {
+            let production = 1; // Start with 1 antimatter per second base production
+            for (let i = 0; i < 4; i++) {
+                let dimProduction = gameState.dimensions[i] * gameState.dimensionProduction[i];
+                
+                // Apply upgrades
+                if (gameState.upgrades[0] && i === 0) dimProduction *= 2;
+                if (gameState.upgrades[1]) dimProduction *= 2;
+                
+                production += dimProduction;
+            }
+            return production;
+        }
+
+        // Game loop
+        function gameLoop() {
+            // Calculate production
+            gameState.antimatterPerSec = calculateProduction();
+            gameState.antimatter += gameState.antimatterPerSec / 10; // 10 updates per second
+            gameState.totalAntimatter += gameState.antimatterPerSec / 10;
+            
+            // Auto buyer
+            if (gameState.autoBuyer) {
+                const cost = gameState.dimensionCosts[0];
+                if (gameState.antimatter >= cost) {
+                    buyDimension(1);
+                }
+            }
+            
+            updateDisplay();
+        }
+
+        // Check achievements
+        function checkAchievements() {
+            if (gameState.totalAntimatter >= 10 && !gameState.achievements[0]) {
+                gameState.achievements[0] = true;
+                document.getElementById('achievement1').classList.remove('locked');
+            }
+            if (gameState.totalAntimatter >= 100 && !gameState.achievements[1]) {
+                gameState.achievements[1] = true;
+                document.getElementById('achievement2').classList.remove('locked');
+            }
+            if (gameState.totalAntimatter >= 1000 && !gameState.achievements[2]) {
+                gameState.achievements[2] = true;
+                document.getElementById('achievement3').classList.remove('locked');
+            }
+            if (Math.max(...gameState.dimensions) >= 10 && !gameState.achievements[3]) {
+                gameState.achievements[3] = true;
+                document.getElementById('achievement4').classList.remove('locked');
+            }
+        }
+
+        // Create particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Time tracking
+        function updateTime() {
+            gameState.timePlayed++;
+            const hours = Math.floor(gameState.timePlayed / 3600);
+            const minutes = Math.floor((gameState.timePlayed % 3600) / 60);
+            const seconds = gameState.timePlayed % 60;
+            document.getElementById('timePlayed').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Initialize game
+        function initGame() {
+            createParticles();
+            updateDisplay();
+            setInterval(gameLoop, 100); // 10 times per second
+            setInterval(updateTime, 1000); // Once per second
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
