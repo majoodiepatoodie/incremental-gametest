@@ -246,6 +246,59 @@
             color: #666;
         }
 
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .modal-content h2 {
+            color: #4ecdc4;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .claim-btn {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .claim-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
         @media (max-width: 768px) {
             .game-panel {
                 grid-template-columns: 1fr;
@@ -322,6 +375,21 @@
             <div class="stat-card">
                 <div class="stat-label">Time Played</div>
                 <div class="stat-value" id="timePlayed">00:00:00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Save Status</div>
+                <div class="stat-value" id="saveStatus">Auto Save: ON</div>
+                <button onclick="manualSave()" style="margin-top: 10px; padding: 5px 10px; background: #4ecdc4; border: none; border-radius: 5px; color: white; cursor: pointer;">Manual Save</button>
+            </div>
+        </div>
+
+        <!-- Offline Progress Modal -->
+        <div id="offlineModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Offline Progress</h2>
+                <p>You were away for <span id="offlineTime">0</span> seconds</p>
+                <p>You earned <span id="offlineEarnings">0</span> antimatter while offline</p>
+                <button id="claimOfflineBtn" class="claim-btn">Claim Offline Earnings</button>
             </div>
         </div>
 
@@ -425,7 +493,8 @@
             upgrades: [false, false, false],
             upgradeCosts: [50, 500, 1000],
             achievements: [false, false, false, false],
-            autoBuyer: false
+            autoBuyer: false,
+            lastSaveTime: Date.now()
         };
 
         // Format numbers
@@ -484,6 +553,7 @@
                 gameState.dimensions[dimIndex - 1]++;
                 gameState.dimensionCosts[dimIndex - 1] = Math.floor(cost * 1.15);
                 updateDisplay();
+                saveGame(); // Save after purchase
             }
         }
 
@@ -499,6 +569,7 @@
                 }
                 
                 updateDisplay();
+                saveGame(); // Save after purchase
             }
         }
 
@@ -578,12 +649,94 @@
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
+        // Save game state
+        function saveGame() {
+            try {
+                gameState.lastSaveTime = Date.now();
+                localStorage.setItem('antimatterDimensions', JSON.stringify(gameState));
+                console.log('Game saved successfully');
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
+        }
+
+        // Load game state
+        function loadGame() {
+            try {
+                const saved = localStorage.getItem('antimatterDimensions');
+                if (saved) {
+                    const savedState = JSON.parse(saved);
+                    Object.assign(gameState, savedState);
+                    console.log('Game loaded successfully');
+                    
+                    // Check for offline progress
+                    const currentTime = Date.now();
+                    const timeDiff = currentTime - gameState.lastSaveTime;
+                    const secondsOffline = Math.floor(timeDiff / 1000);
+                    
+                    if (secondsOffline > 5) { // Only show if away for more than 5 seconds
+                        const offlineProduction = calculateProduction();
+                        const offlineEarnings = (offlineProduction * secondsOffline);
+                        
+                        if (offlineEarnings > 0) {
+                            document.getElementById('offlineTime').textContent = formatTime(secondsOffline);
+                            document.getElementById('offlineEarnings').textContent = formatNumber(offlineEarnings);
+                            document.getElementById('offlineModal').style.display = 'block';
+                        }
+                    }
+                } else {
+                    console.log('No saved game found, starting fresh');
+                }
+            } catch (error) {
+                console.error('Failed to load game:', error);
+            }
+        }
+
+        // Format time for display
+        function formatTime(seconds) {
+            if (seconds < 60) return seconds + ' seconds';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours';
+            return Math.floor(seconds / 86400) + ' days';
+        }
+
+        // Manual save function
+        function manualSave() {
+            saveGame();
+            document.getElementById('saveStatus').textContent = 'Saved! ' + new Date().toLocaleTimeString();
+            setTimeout(() => {
+                document.getElementById('saveStatus').textContent = 'Auto Save: ON';
+            }, 2000);
+        }
+
+        // Claim offline earnings
+        function claimOfflineEarnings() {
+            const currentTime = Date.now();
+            const timeDiff = currentTime - gameState.lastSaveTime;
+            const secondsOffline = Math.floor(timeDiff / 1000);
+            const offlineProduction = calculateProduction();
+            const offlineEarnings = (offlineProduction * secondsOffline);
+            
+            gameState.antimatter += offlineEarnings;
+            gameState.totalAntimatter += offlineEarnings;
+            gameState.lastSaveTime = currentTime;
+            
+            document.getElementById('offlineModal').style.display = 'none';
+            saveGame();
+            updateDisplay();
+        }
+
         // Initialize game
         function initGame() {
+            loadGame();
             createParticles();
             updateDisplay();
             setInterval(gameLoop, 100); // 10 times per second
             setInterval(updateTime, 1000); // Once per second
+            setInterval(saveGame, 5000); // Save every 5 seconds
+            
+            // Add event listener for claim button
+            document.getElementById('claimOfflineBtn').addEventListener('click', claimOfflineEarnings);
         }
 
         // Start the game when page loads
